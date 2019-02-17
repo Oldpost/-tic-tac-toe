@@ -45,12 +45,11 @@ class ShoppingList extends React.Component {
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={"square"+ props.isCurrent} onClick={props.onClick}>
       {props.value}
     </button>
   );
 }
-
 class Board extends React.Component {
   // 构造函数：保存状态
   // constructor(props) {
@@ -75,6 +74,7 @@ class Board extends React.Component {
 
   renderSquare(i) {
     return <Square 
+      isCurrent={this.props.currentNum === i?' active':''}
       value={this.props.squares[i]} 
       onClick={() => this.props.onClick(i)} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
     />;
@@ -136,9 +136,11 @@ class Game extends React.Component {
       this.state = {
         history: [{
           squares: Array(9).fill(null),
+          currentI:null
         }],
         stepNumber: 0,
-        xIsNext: true
+        currentI:null,
+        xIsNext: true,
       };
   }
   handleClick(i) {
@@ -152,15 +154,18 @@ class Game extends React.Component {
     this.setState({
       // squares: squares, // 直接使用this.state.squares时点击状态没有改变
       history: history.concat([{
-        squares: squares
+        squares: squares,
+        currentI:i
       }]),
       stepNumber:history.length,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      currentI:i
     });
   }
-  jumpTo(step) {
+  jumpTo(step,currentI) {
     this.setState({
       stepNumber: step,
+      currentI:currentI,
       xIsNext: (step % 2) ? false : true,
     });
   }
@@ -168,14 +173,15 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
+    const currentNum = this.state.currentI;
     const moves = history.map((step, move) => {
-      const desc = move ?
-        'Move #' + move :
+      let currentI = step.currentI;
+      const desc =typeof currentI === 'number'?
+        'Move #' + parseInt(currentI/3 + 1)+','+(currentI%3+1) :
         'Game start';
       return (
         <li key={move}>
-          <a href="#"  onClick={() => this.jumpTo(move)}>{desc}</a>
+          <a href="#" className={move===this.state.stepNumber?'active':''} onClick={() => this.jumpTo(move,currentI)}>{desc}</a>
         </li>
       );
     });
@@ -192,6 +198,7 @@ class Game extends React.Component {
       <Errors />
         <div className="game-board">
           <Board 
+            currentNum={currentNum}
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}/>
         </div>
