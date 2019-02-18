@@ -53,7 +53,7 @@ function Square(props) {
 function Btn(props) {
   return (
     <button onClick={props.onClickUp}>
-      {props.historyStatus?'升序':'降序'}
+      {props.historyStatus?'降序':'升序'}
     </button>
   );
 }
@@ -80,8 +80,12 @@ class Board extends React.Component {
   // }
 
   renderSquare(i) {
+    const currentNum =this.props.currentNum
+    const isCurrent = currentNum.some(function (value,index,arr) {
+      return value === i
+    });
     return <Square 
-      isCurrent={this.props.currentNum === i?' active':''}
+      isCurrent={ isCurrent?' active':''}
       value={this.props.squares[i]} 
       onClick={() => this.props.onClick(i)} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
     />;
@@ -178,7 +182,6 @@ class Game extends React.Component {
     });
   }
   onClickUp(){
-    console.log('点到我了')
     this.setState({
       historyStatus: !this.state.historyStatus,
     });
@@ -193,7 +196,7 @@ class Game extends React.Component {
     const history =this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    const currentNum = this.state.currentI;
+    const currentNum = winner?winner.line:Array(1).fill(this.state.currentI);
     const moves = history.map((step, move) => {
       let currentI = step.currentI;
       const desc =typeof currentI === 'number'?
@@ -208,7 +211,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = 'Winner: ' + winner;
+      status = 'Winner: ' + winner.winner;
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -249,7 +252,10 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+          winner:squares[a],
+          line:[a, b, c]
+        };
     }
   }
   return null;
