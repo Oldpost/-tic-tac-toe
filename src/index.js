@@ -50,6 +50,13 @@ function Square(props) {
     </button>
   );
 }
+function Btn(props) {
+  return (
+    <button onClick={props.onClickUp}>
+      {props.historyStatus?'升序':'降序'}
+    </button>
+  );
+}
 class Board extends React.Component {
   // 构造函数：保存状态
   // constructor(props) {
@@ -79,7 +86,7 @@ class Board extends React.Component {
       onClick={() => this.props.onClick(i)} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
     />;
   }
-
+  
   render() {
     // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     // const winner = calculateWinner(this.state.squares);
@@ -141,6 +148,7 @@ class Game extends React.Component {
         stepNumber: 0,
         currentI:null,
         xIsNext: true,
+        historyStatus:true,
       };
   }
   handleClick(i) {
@@ -169,8 +177,20 @@ class Game extends React.Component {
       xIsNext: (step % 2) ? false : true,
     });
   }
+  onClickUp(){
+    console.log('点到我了')
+    this.setState({
+      historyStatus: !this.state.historyStatus,
+    });
+  }
+  renderBtn() {
+    return <Btn 
+      historyStatus={this.state.historyStatus} 
+      onClickUp={() => this.onClickUp()} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
+    />;
+  }
   render() {
-    const history = this.state.history;
+    const history =this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const currentNum = this.state.currentI;
@@ -202,9 +222,11 @@ class Game extends React.Component {
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}/>
         </div>
+        
         <div className="game-info">
+          {this.renderBtn()}
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <ol>{this.state.historyStatus?moves:moves.reverse()}</ol>
         </div>
       </div>
     );
