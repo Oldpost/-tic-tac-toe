@@ -161,7 +161,6 @@ class Game extends React.Component {
         startTime: currentTime
       });
     }
-    
   }
   renderBtn() {
     return <Btn 
@@ -196,7 +195,7 @@ class Game extends React.Component {
       this.setState({
         currentTime: new Date().toLocaleTimeString()
       });
-    }, 1000);;
+    }, 1000);
     const moves = history.map((step, move) => {
       let currentI = step.currentI;
       const desc =typeof currentI === 'number'?
