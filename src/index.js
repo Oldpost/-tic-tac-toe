@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { Script } from 'vm';
-// import './common.js';
 
 class ShoppingList extends React.Component {
   render() { // render返回想要渲染内容的描述
@@ -20,29 +18,6 @@ class ShoppingList extends React.Component {
   }
 }
 
-// Example usage: <ShoppingList name="Mark" />
-
-// React 专门为像 Square 组件这种只有 render 方法的组件提供了一种更简便的定义组件的方法： 函数定义组件 。只需要简单写一个以 props 为参数的 function 返回 JSX 元素
-// class Square extends React.Component {
-//   // 使用 JavaScript classes 时，你必须调用 super(); 方法才能在继承父类的子类中正确获取到类型的 this
-// 构造函数：保存状态
-//   // constructor(props) {
-//   //   super(props);
-//   //   this.state = {
-//   //     value: null,
-//   //   };
-//   // }
-
-//   render() {
-//     console.log('this.props', this.props);
-//     return (
-//       <button className="square" onClick={() => this.props.onClick()}>
-//         {this.props.value}
-//       </button>
-//     );
-//   }
-// }
-
 function Square(props) {
   return (
     <button className={"square"+ props.isCurrent} onClick={props.onClick}>
@@ -52,33 +27,19 @@ function Square(props) {
 }
 function Btn(props) {
   return (
-    <button onClick={props.onClickUp}>
-      {props.historyStatus?'降序':'升序'}
+    <button onClick={props.onClickUp} className="btn">
+      {props.historyStatus?'down':'up'}
+    </button>
+  );
+}
+function StartBtn(props) {
+  return (
+    <button onClick={props.onClickStart} className="btn" disabled={props.isEnd}>
+      {props.isStart ? 'Click to pause' : 'Click to start'}
     </button>
   );
 }
 class Board extends React.Component {
-  // 构造函数：保存状态
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     squares: Array(9).fill(null), // 初始化一个包含9个空值的数组作为状态数据
-  //     xIsNext: true,  // 轮流落子 
-  //   };
-  // }
-
-  // handleClick(i) {
-  //   const squares = this.state.squares.slice();
-  //   if (calculateWinner(squares) || squares[i]) {
-  //     return;
-  //   }
-  //   squares[i] = this.state.xIsNext ? 'X' : 'O';; // 不可以直接修改this.state.squares的值
-  //   this.setState({
-  //     squares: squares, // 直接使用this.state.squares时点击状态没有改变
-  //     xIsNext: !this.state.xIsNext
-  //   });
-  // }
-
   renderSquare(i) {
     const currentNum =this.props.currentNum
     const isCurrent = currentNum.some(function (value,index,arr) {
@@ -92,17 +53,8 @@ class Board extends React.Component {
   }
   
   render() {
-    // const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    // const winner = calculateWinner(this.state.squares);
-    // let status;
-    // if (winner) {
-    //   status = 'Winner: ' + winner;
-    // } else {
-    //   status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    // }
     return (
       <div>
-        {/* <div className="status">{status}</div> */}
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -153,12 +105,20 @@ class Game extends React.Component {
         currentI:null,
         xIsNext: true,
         historyStatus:true,
+        isStart:false,
+        startTime: 0,
+        alltimes:0,
+        currentTime:new Date().toLocaleTimeString()
       };
   }
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    const isStart = this.state.isStart;
+    if (!isStart){
+      return;
+    }
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -169,6 +129,7 @@ class Game extends React.Component {
         squares: squares,
         currentI:i
       }]),
+      alltimes: this.state.alltimes+new Date().getTime()-this.state.startTime,
       stepNumber:history.length,
       xIsNext: !this.state.xIsNext,
       currentI:i
@@ -186,10 +147,44 @@ class Game extends React.Component {
       historyStatus: !this.state.historyStatus,
     });
   }
+  onClickStart(){
+    const currentTime = new Date().getTime();
+    const startTime = this.state.startTime ? this.state.startTime:new Date().getTime();
+    if (this.state.isStart){
+      this.setState({
+        alltimes:this.state.alltimes + currentTime - startTime,
+        isStart: !this.state.isStart,
+      });
+    }else{
+      this.setState({
+        isStart: !this.state.isStart,
+        startTime: currentTime
+      });
+    }
+    
+  }
   renderBtn() {
     return <Btn 
       historyStatus={this.state.historyStatus} 
       onClickUp={() => this.onClickUp()} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
+    />;
+  }
+  renderCurrentTime() {
+    return <div>
+      <span>Hi old man!</span>
+      <span> It is now {this.state.currentTime}.</span>
+    </div>
+  }
+  renderAllTimes() {
+    return <div>
+      <span> It lasts {this.state.alltimes}</span>
+    </div>
+  }
+  renderStartBtn(winner) {
+    return <StartBtn 
+      isEnd={winner?true:false}
+      isStart={this.state.isStart}
+      onClickStart={() => this.onClickStart()} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
     />;
   }
   render() {
@@ -197,6 +192,11 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const currentNum = winner?winner.line:Array(1).fill(this.state.currentI);
+    const setTimes = setInterval(() => {
+      this.setState({
+        currentTime: new Date().toLocaleTimeString()
+      });
+    }, 1000);;
     const moves = history.map((step, move) => {
       let currentI = step.currentI;
       const desc =typeof currentI === 'number'?
@@ -227,7 +227,10 @@ class Game extends React.Component {
         </div>
         
         <div className="game-info">
+          {this.renderCurrentTime()}
           {this.renderBtn()}
+          {this.renderStartBtn(winner)}
+          {winner ? this.renderAllTimes():''}
           <div>{status}</div>
           <ol>{this.state.historyStatus?moves:moves.reverse()}</ol>
         </div>
