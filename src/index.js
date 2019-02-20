@@ -176,10 +176,13 @@ class Game extends React.Component {
       <span> It is now {this.state.currentTime}.</span>
     </div>
   }
-  renderAllTimes() {
-    return <div>
-      <span> It lasts {this.state.alltimes}ms</span>
-    </div>
+  renderAllTimes(winner) {
+    if(winner){
+      return <div>
+        <span> It lasts {this.state.alltimes}ms</span>
+      </div>
+    }
+    return null
   }
   renderStartBtn(winner) {
     return <StartBtn 
@@ -239,7 +242,7 @@ class Game extends React.Component {
           {this.renderCurrentTime()}
           {this.renderBtn()}
           {this.renderStartBtn(winner)}
-          {winner && this.renderAllTimes()}
+          {this.renderAllTimes(winner)}
           <div>{status}</div>
           <ol>{this.state.historyStatus?moves:moves.reverse()}</ol>
         </div>
