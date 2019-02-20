@@ -116,6 +116,7 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     const isStart = this.state.isStart;
+    const currentTime=new Date().getTime()
     if (!isStart){
       return;
     }
@@ -123,17 +124,18 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O'; // 不可以直接修改this.state.squares的值
-    this.setState({
+    this.setState((prevState) => ({
       // squares: squares, // 直接使用this.state.squares时点击状态没有改变
       history: history.concat([{
         squares: squares,
         currentI:i
       }]),
-      alltimes: this.state.alltimes+new Date().getTime()-this.state.startTime,
+      alltimes: prevState.alltimes + currentTime - prevState.startTime,
+      startTime: currentTime,
       stepNumber:history.length,
-      xIsNext: !this.state.xIsNext,
+      xIsNext: !prevState.xIsNext,
       currentI:i
-    });
+    }));
   }
   jumpTo(step,currentI) {
     this.setState({
@@ -143,23 +145,23 @@ class Game extends React.Component {
     });
   }
   onClickUp(){
-    this.setState({
-      historyStatus: !this.state.historyStatus,
-    });
+    this.setState((prevState) => ({
+      historyStatus: !prevState.historyStatus,
+    }));
   }
   onClickStart(){
     const currentTime = new Date().getTime();
     const startTime = this.state.startTime ? this.state.startTime:new Date().getTime();
     if (this.state.isStart){
-      this.setState({
-        alltimes:this.state.alltimes + currentTime - startTime,
-        isStart: !this.state.isStart,
-      });
+      this.setState((prevState)=> ({
+        alltimes: prevState.alltimes + currentTime - startTime,
+        isStart: !prevState.isStart,
+      }));
     }else{
-      this.setState({
-        isStart: !this.state.isStart,
+      this.setState((prevState) => ({
+        isStart: !prevState.isStart,
         startTime: currentTime
-      });
+      }));
     }
   }
   renderBtn() {
@@ -176,7 +178,7 @@ class Game extends React.Component {
   }
   renderAllTimes() {
     return <div>
-      <span> It lasts {Math.round(this.state.alltimes / 1000)}s</span>
+      <span> It lasts {this.state.alltimes}ms</span>
     </div>
   }
   renderStartBtn(winner) {
@@ -237,7 +239,7 @@ class Game extends React.Component {
           {this.renderCurrentTime()}
           {this.renderBtn()}
           {this.renderStartBtn(winner)}
-          {winner ? this.renderAllTimes():''}
+          {winner && this.renderAllTimes()}
           <div>{status}</div>
           <ol>{this.state.historyStatus?moves:moves.reverse()}</ol>
         </div>
