@@ -177,26 +177,34 @@ class Game extends React.Component {
   }
   renderAllTimes() {
     return <div>
-      <span> It lasts {this.state.alltimes}</span>
+      <span> It lasts {Math.round(this.state.alltimes / 1000)}s</span>
     </div>
   }
   renderStartBtn(winner) {
     return <StartBtn 
       isEnd={winner?true:false}
       isStart={this.state.isStart}
-      onClickStart={() => this.onClickStart()} // JSX 元素的最外层套上了一小括号，以防止 JavaScript 代码在解析时自动在换行处添加分号
+      onClickStart = {
+        this.onClickStart.bind(this)
+      } // JSX 事件处理除了使用箭头函数(arrow functions )也可以使用bing()实现--Function.prototype.bind
     />;
+  }
+  tick() {
+    this.setState({
+      currentTime: new Date().toLocaleTimeString()
+    });
+  }
+  componentDidMount() {
+    this.setTimes = setInterval(() => this.tick(), 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.setTimes);
   }
   render() {
     const history =this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const currentNum = winner?winner.line:Array(1).fill(this.state.currentI);
-    const setTimes = setInterval(() => {
-      this.setState({
-        currentTime: new Date().toLocaleTimeString()
-      });
-    }, 1000);;
     const moves = history.map((step, move) => {
       let currentI = step.currentI;
       const desc =typeof currentI === 'number'?

@@ -68,8 +68,10 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
 
 未实现功能
-1. 以 “(1, 3)” 坐标的方式记录每一步，而不是格子序号 “6”。
-2. 在棋步记录列表里加粗显示当前选中的项目。
+1. ~~ 以 “(1, 3)” 坐标的方式记录每一步，而不是格子序号 “6”。~~
+2. ~~在棋步记录列表里加粗显示当前选中的项目。~~
 3. 在 Board 组件中用两个循环渲染出 9 个 Square 格子组件。
-4. 添加一个切换按钮来升序或降序显示棋步记录列表。
-5. 当一方获胜时，高亮显示连成一线的3颗棋子。
+4. ~~添加一个切换按钮来升序或降序显示棋步记录列表。~~
+5. ~~当一方获胜时，高亮显示连成一线的3颗棋子。~~
+6. ~~添加开始/暂停按钮，未开始时不可点击~~
+7. ~~添加时间显示，以及全程所需要的时间~~
