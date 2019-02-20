@@ -204,14 +204,6 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const currentNum = winner?winner.line:Array(1).fill(this.state.currentI);
-<<<<<<< HEAD
-=======
-    const setTimes = setInterval(() => {
-      this.setState({
-        currentTime: new Date().toLocaleTimeString()
-      });
-    }, 1000);
->>>>>>> e47bef567ed08afeb24a5a853eac640d3078e607
     const moves = history.map((step, move) => {
       let currentI = step.currentI;
       const desc =typeof currentI === 'number'?
