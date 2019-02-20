@@ -64,7 +64,10 @@ ul {
 }
 .item{
   flex-basis:calc(50%);
+  margin-bottom: 20px
 }
 .userinfo-box,.userinfo-btn{
   width: calc(100%);
 }
+.item-label{width: 70px;display: inline-block;line-height: 30px}
+.item-input{width: calc(100% - 70px);box-sizing: border-box;padding: 5px;margin: 0}
