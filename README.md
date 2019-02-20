@@ -75,3 +75,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 5. ~~当一方获胜时，高亮显示连成一线的3颗棋子。~~
 6. ~~添加开始/暂停按钮，未开始时不可点击~~
 7. ~~添加时间显示，以及全程所需要的时间~~
+8. 添加一个开始游戏按钮，并让用户填写当前选手信息，开始/暂停按钮暂时不可用
